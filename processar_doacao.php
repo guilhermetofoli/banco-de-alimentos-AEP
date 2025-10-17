@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             VALUES ('$doador_id', '$alimento_id', '$instituicao_id', '$quantidade')";
 
     if (mysqli_query($conexao, $sql)) {
-        // Sucesso: Redireciona para a lista de Doações (próximo passo)
+        // Sucesso: Redireciona para a lista de Doações
         mysqli_close($conexao);
         header("Location: listar_doacoes.php?sucesso=true");
         exit();
