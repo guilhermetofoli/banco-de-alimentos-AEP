@@ -1,3 +1,4 @@
+
 #Criando o BD
 CREATE DATABASE banco_de_alimentos;
 
