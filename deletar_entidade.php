@@ -27,7 +27,7 @@ if ($tabela == 'doadores') {
 
 if (mysqli_query($conexao, $sql_delete)) {
     mysqli_close($conexao);
-    header("Location: listar_entidades.php?sucesso=true&entidade=" . urlencode("$entid1ade excluído com sucesso!"));
+    header("Location: listar_entidades.php?sucesso=true&msg=" . urlencode("$entidade excluído(a) com sucesso!"));
     exit();
 } else {
     $erro = "Erro ao excluir $entidade: " . mysqli_error($conexao);

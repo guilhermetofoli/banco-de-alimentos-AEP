@@ -1,12 +1,11 @@
 <?php
 session_start();
-// CÓDIGO DE PROTEÇÃO
 if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
     header("Location: login.php");
     exit();
 }
 require_once 'conexao.php';
-// Query com JOINs para buscar o NOME dos doadores, alimentos e instituições
+
 $sql_select = "
     SELECT 
         d.id_doacao, 
@@ -32,6 +31,13 @@ if ($resultado && mysqli_num_rows($resultado) > 0) {
     }
 }
 
+$mensagem_sucesso = "";
+if (isset($_GET['sucesso']) && $_GET['sucesso'] == 'true') {
+    // Captura o sucesso da doação ou edição
+    $mensagem_sucesso = "<div class='alert-success'>✅ Transação concluída e estoque atualizado com sucesso!</div>";
+}
+
+
 mysqli_close($conexao);
 ?>
 <!DOCTYPE html>
@@ -47,11 +53,11 @@ mysqli_close($conexao);
     
     /* Variáveis de Cor */
     :root {
-        --primary-color: #27ae60; /* Verde vibrante */
-        --secondary-color: #34495e; /* Azul escuro */
+        --primary-color: #27ae60;
+        --secondary-color: #34495e;
         --text-color: #333;
-        --light-bg: #ecf0f1; /* Cinza claro */
-        --border-color: #bdc3c7; /* Cinza médio */
+        --light-bg: #ecf0f1;
+        --border-color: #bdc3c7;
         --shadow-color: rgba(0, 0, 0, 0.1);
     }
 
@@ -65,7 +71,7 @@ mysqli_close($conexao);
     }
 
     .container {
-        max-width: 1200px; /* Mais largo para as listas */
+        max-width: 1200px;
         margin: 30px auto;
         background: white;
         padding: 30px;
@@ -110,34 +116,6 @@ mysqli_close($conexao);
         background-color: #2c3e50; 
         text-decoration: none;
     }
-
-    /* Estilo de Formulário*/
-    label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 400; color: var(--secondary-color); font-size: 0.95em; }
-    input[type="text"], input[type="number"], select { 
-        width: 100%; 
-        padding: 12px; 
-        margin-bottom: 15px; 
-        border: 1px solid var(--border-color); 
-        border-radius: 6px; 
-        box-sizing: border-box; 
-        font-size: 1em; 
-        transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 5px rgba(39, 174, 96, 0.3); }
-    button { 
-        background-color: var(--primary-color); 
-        color: white; 
-        padding: 12px 25px; 
-        border: none; 
-        border-radius: 6px; 
-        cursor: pointer; 
-        margin-top: 25px; 
-        font-size: 1.1em; 
-        font-weight: 700; 
-        transition: background-color 0.3s ease, transform 0.2s ease; 
-        display: block; width: 100%; 
-    }
-    button:hover { background-color: #229954; transform: translateY(-2px); }
 
     /* Estilo de Tabela*/
     table { 
@@ -184,6 +162,8 @@ mysqli_close($conexao);
             <a href="registrar_doacao_form.php">Registrar Doação</a>
             <a href="listar_doacoes.php">Consultar Doações</a>
         </div>
+        
+        <?php echo $mensagem_sucesso; ?>
 
         <h2>Doações Realizadas</h2>
         <?php if (!empty($doacoes)): ?>
@@ -208,7 +188,7 @@ mysqli_close($conexao);
                             <td><?php echo htmlspecialchars($doacao['quantidade'] . ' ' . $doacao['unidade_medida']); ?></td>
                             <td><?php echo htmlspecialchars($doacao['nome_instituicao']); ?></td>
                             <td><?php echo date('d/m/Y H:i:s', strtotime($doacao['data_hora_doacao'])); ?></td>
-                        
+                            
                             <td>
                                 <a href="editar_doacao.php?id=<?php echo $doacao['id_doacao']; ?>" 
                                    style="color: #007bff; text-decoration: none; font-weight: bold; font-size: 1.1em;"
@@ -216,7 +196,6 @@ mysqli_close($conexao);
                                     &#x270E; Editar 
                                 </a>
                             </td>
-                        
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

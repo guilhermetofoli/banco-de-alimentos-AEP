@@ -1,29 +1,29 @@
 <?php
 session_start();
-// CÓDIGO DE PROTEÇÃO
 if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
     header("Location: login.php");
     exit();
 }
 require_once 'conexao.php';
 
-// 1. Consulta Doadores (Precisa do ID para o link de Edição/Exclusão)
 $sql_doadores = "SELECT id_doador, nome_razao_social, documento_cpf_cnpj FROM doadores ORDER BY nome_razao_social ASC";
 $res_doadores = mysqli_query($conexao, $sql_doadores);
 
-// 2. Consulta Instituições (Precisa do ID para o link de Edição/Exclusão)
 $sql_inst = "SELECT id_instituicao, nome_fantasia, cnpj FROM instituicoes ORDER BY nome_fantasia ASC";
 $res_inst = mysqli_query($conexao, $sql_inst);
 
-// 3. Verifica Mensagem de Sucesso (e adiciona verificação de erro para UX)
 $mensagem_sucesso = "";
 $mensagem_erro = "";
 
-if (isset($_GET['sucesso']) && $_GET['sucesso'] == 'true' && isset($_GET['entidade'])) {
-    $entidade = htmlspecialchars($_GET['entidade']);
-    $mensagem_sucesso = "<div class='alert-success'>✅ $entidade cadastrado(a) com sucesso!</div>";
+if (isset($_GET['sucesso']) && $_GET['sucesso'] == 'true') {
+    if (isset($_GET['msg'])) {
+        $msg = htmlspecialchars($_GET['msg']);
+        $mensagem_sucesso = "<div class='alert-success'>✅ $msg</div>";
+    } elseif (isset($_GET['entidade'])) { 
+        $entidade = htmlspecialchars($_GET['entidade']);
+        $mensagem_sucesso = "<div class='alert-success'>✅ $entidade cadastrado(a) com sucesso!</div>";
+    }
 }
-// Adicionando alerta de erro, caso venha do deletar_entidade.php
 if (isset($_GET['erro'])) {
     $erro_msg = htmlspecialchars($_GET['erro']);
     $mensagem_erro = "<div class='alert-danger'>❌ Erro: $erro_msg</div>";
@@ -40,16 +40,14 @@ mysqli_close($conexao);
     <title>Lista de Entidades - Banco de Alimentos</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-    /* Importação da Fonte */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
     
-    /* Variáveis de Cor */
     :root {
-        --primary-color: #27ae60; /* Verde vibrante */
-        --secondary-color: #34495e; /* Azul escuro */
+        --primary-color: #27ae60;
+        --secondary-color: #34495e;
         --text-color: #333;
-        --light-bg: #ecf0f1; /* Cinza claro */
-        --border-color: #bdc3c7; /* Cinza médio */
+        --light-bg: #ecf0f1;
+        --border-color: #bdc3c7;
         --shadow-color: rgba(0, 0, 0, 0.1);
     }
 
@@ -63,7 +61,7 @@ mysqli_close($conexao);
     }
 
     .container {
-        max-width: 1200px; /* Mais largo para as listas */
+        max-width: 1200px;
         margin: 30px auto;
         background: white;
         padding: 30px;
@@ -87,7 +85,6 @@ mysqli_close($conexao);
         font-size: 1.8em;
     }
     
-    /* Estilo de Navegação */
     .nav-links { 
         margin-bottom: 30px; 
         border-bottom: 1px solid #eee; 
@@ -109,9 +106,6 @@ mysqli_close($conexao);
         text-decoration: none;
     }
 
-    /* Estilo de Formulário (Omitido para listagem) */
-
-    /* Estilo de Tabela*/
     table { 
         width: 100%; 
         border-collapse: collapse; 
@@ -133,7 +127,6 @@ mysqli_close($conexao);
     tr:nth-child(even) { background-color: #f9f9f9; }
     tr:hover { background-color: #f1f1f1; }
     
-    /* Estilo para Alerta Vermelho */
     .alert-danger {
         background-color: #f8d7da; 
         color: #721c24; 
@@ -144,7 +137,6 @@ mysqli_close($conexao);
         text-align: center;
         font-weight: bold;
     }
-    /* Alertas e Mensagens */
     .alert-success { 
         background-color: #d4edda; 
         color: #155724; 
@@ -177,7 +169,8 @@ mysqli_close($conexao);
                 <tr>
                     <th>Nome</th>
                     <th>Documento</th>
-                    <th>Ações</th> </tr>
+                    <th>Ações</th> 
+                </tr>
             </thead>
             <tbody>
                 <?php if (mysqli_num_rows($res_doadores) > 0): ?>
@@ -208,7 +201,8 @@ mysqli_close($conexao);
                 <tr>
                     <th>Nome Fantasia</th>
                     <th>CNPJ</th>
-                    <th>Ações</th> </tr>
+                    <th>Ações</th> 
+                </tr>
             </thead>
             <tbody>
                 <?php if (mysqli_num_rows($res_inst) > 0): ?>
