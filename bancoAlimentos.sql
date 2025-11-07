@@ -115,7 +115,7 @@ ON DUPLICATE KEY UPDATE saldo_atual = saldo_atual;
 #VIEW DE RELATORIO DE DOACOES#
 CREATE VIEW vw_relatorio_doacoes AS
 SELECT
-    d.id_doacao AS id_doacao, -- NOVO: Adiciona o ID da doação
+    d.id_doacao AS id_doacao,
     d.data_hora_doacao AS Data,
     doad.nome_razao_social AS Doador,
     inst.nome_fantasia AS Instituicao_Receptora,
@@ -137,11 +137,11 @@ SELECT
     ali.unidade_medida AS Unidade
 FROM controle_estoque ce
 JOIN alimentos ali ON ce.fk_id_alimento = ali.id_alimento
-WHERE ce.saldo_atual > 0  -- Mostra apenas itens com saldo positivo
+WHERE ce.saldo_atual > 0 
 ORDER BY ali.nome_alimento ASC;
 
 
-##SP de exclusão##a
+##SP de exclusão##
 
 -- Altera o delimitador
 DELIMITER $$
@@ -202,9 +202,6 @@ BEGIN
     );
 
     -- 2. Atualiza o saldo do estoque (REVISADO)
-    -- Usa INSERT ... ON DUPLICATE KEY UPDATE para garantir que o registro exista, mesmo que não devesse.
-    -- MAS vamos manter o UPDATE simples para verificar a lógica.
-    
     UPDATE controle_estoque
     SET saldo_atual = saldo_atual + p_quantidade
     WHERE fk_id_alimento = p_id_alimento;
