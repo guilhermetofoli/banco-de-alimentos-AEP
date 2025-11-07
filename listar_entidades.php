@@ -1,20 +1,28 @@
 <?php
 require_once 'conexao.php'; 
 
-// 1. Consulta Doadores
-$sql_doadores = "SELECT nome_razao_social, documento_cpf_cnpj FROM doadores ORDER BY nome_razao_social ASC";
+// 1. Consulta Doadores (Precisa do ID para o link de Edição/Exclusão)
+$sql_doadores = "SELECT id_doador, nome_razao_social, documento_cpf_cnpj FROM doadores ORDER BY nome_razao_social ASC";
 $res_doadores = mysqli_query($conexao, $sql_doadores);
 
-// 2. Consulta Instituições
-$sql_inst = "SELECT nome_fantasia, cnpj FROM instituicoes ORDER BY nome_fantasia ASC";
+// 2. Consulta Instituições (Precisa do ID para o link de Edição/Exclusão)
+$sql_inst = "SELECT id_instituicao, nome_fantasia, cnpj FROM instituicoes ORDER BY nome_fantasia ASC";
 $res_inst = mysqli_query($conexao, $sql_inst);
 
-// 3. Verifica Mensagem de Sucesso
+// 3. Verifica Mensagem de Sucesso (e adiciona verificação de erro para UX)
 $mensagem_sucesso = "";
+$mensagem_erro = "";
+
 if (isset($_GET['sucesso']) && $_GET['sucesso'] == 'true' && isset($_GET['entidade'])) {
     $entidade = htmlspecialchars($_GET['entidade']);
-    $mensagem_sucesso = "<div class='alert-success'> Novo $entidade cadastrado com sucesso!</div>";
+    $mensagem_sucesso = "<div class='alert-success'>✅ $entidade cadastrado(a) com sucesso!</div>";
 }
+// Adicionando alerta de erro, caso venha do deletar_entidade.php
+if (isset($_GET['erro'])) {
+    $erro_msg = htmlspecialchars($_GET['erro']);
+    $mensagem_erro = "<div class='alert-danger'>❌ Erro: $erro_msg</div>";
+}
+
 
 mysqli_close($conexao);
 ?>
@@ -95,33 +103,7 @@ mysqli_close($conexao);
         text-decoration: none;
     }
 
-    /* Estilo de Formulário*/
-    label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: 400; color: var(--secondary-color); font-size: 0.95em; }
-    input[type="text"], input[type="number"], select { 
-        width: 100%; 
-        padding: 12px; 
-        margin-bottom: 15px; 
-        border: 1px solid var(--border-color); 
-        border-radius: 6px; 
-        box-sizing: border-box; 
-        font-size: 1em; 
-        transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 5px rgba(39, 174, 96, 0.3); }
-    button { 
-        background-color: var(--primary-color); 
-        color: white; 
-        padding: 12px 25px; 
-        border: none; 
-        border-radius: 6px; 
-        cursor: pointer; 
-        margin-top: 25px; 
-        font-size: 1.1em; 
-        font-weight: 700; 
-        transition: background-color 0.3s ease, transform 0.2s ease; 
-        display: block; width: 100%; 
-    }
-    button:hover { background-color: #229954; transform: translateY(-2px); }
+    /* Estilo de Formulário (Omitido para listagem) */
 
     /* Estilo de Tabela*/
     table { 
@@ -145,6 +127,17 @@ mysqli_close($conexao);
     tr:nth-child(even) { background-color: #f9f9f9; }
     tr:hover { background-color: #f1f1f1; }
     
+    /* Estilo para Alerta Vermelho */
+    .alert-danger {
+        background-color: #f8d7da; 
+        color: #721c24; 
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: bold;
+    }
     /* Alertas e Mensagens */
     .alert-success { 
         background-color: #d4edda; 
@@ -169,38 +162,67 @@ mysqli_close($conexao);
             <a href="listar_doacoes.php">Consultar Doações</a>
         </div>
         
+        <?php echo $mensagem_erro; ?>
         <?php echo $mensagem_sucesso; ?>
 
         <h2>Doadores (Pessoas Físicas)</h2>
         <table>
-            <thead><tr><th>Nome</th><th>Documento</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Documento</th>
+                    <th>Ações</th> </tr>
+            </thead>
             <tbody>
                 <?php if (mysqli_num_rows($res_doadores) > 0): ?>
                     <?php while($doador = mysqli_fetch_assoc($res_doadores)): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($doador['nome_razao_social']); ?></td>
                             <td><?php echo htmlspecialchars($doador['documento_cpf_cnpj']); ?></td>
+                            <td>
+                                <a href="editar_entidade.php?tabela=doadores&id=<?php echo $doador['id_doador']; ?>" title="Editar Doador">&#x270E; Editar</a>
+                                &nbsp;|&nbsp;
+                                <a href="deletar_entidade.php?tabela=doadores&id=<?php echo $doador['id_doador']; ?>" 
+                                   onclick="return confirm('Confirmar exclusão? Isso pode remover registros relacionados.')"
+                                   style="color: red;" title="Excluir Doador">
+                                    &#x2715; Excluir
+                                </a>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <tr><td colspan="2">Nenhum doador cadastrado.</td></tr>
+                    <tr><td colspan="3">Nenhum doador cadastrado.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
         
         <h2>Instituições Receptoras</h2>
         <table>
-            <thead><tr><th>Nome Fantasia</th><th>CNPJ</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Nome Fantasia</th>
+                    <th>CNPJ</th>
+                    <th>Ações</th> </tr>
+            </thead>
             <tbody>
                 <?php if (mysqli_num_rows($res_inst) > 0): ?>
                     <?php while($instituicao = mysqli_fetch_assoc($res_inst)): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($instituicao['nome_fantasia']); ?></td>
                             <td><?php echo htmlspecialchars($instituicao['cnpj']); ?></td>
+                            <td>
+                                <a href="editar_entidade.php?tabela=instituicoes&id=<?php echo $instituicao['id_instituicao']; ?>" title="Editar Instituição">&#x270E; Editar</a>
+                                &nbsp;|&nbsp;
+                                <a href="deletar_entidade.php?tabela=instituicoes&id=<?php echo $instituicao['id_instituicao']; ?>" 
+                                   onclick="return confirm('Confirmar exclusão?')"
+                                   style="color: red;" title="Excluir Instituição">
+                                    &#x2715; Excluir
+                                </a>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <tr><td colspan="2">Nenhuma instituição cadastrada.</td></tr>
+                    <tr><td colspan="3">Nenhuma instituição cadastrada.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
