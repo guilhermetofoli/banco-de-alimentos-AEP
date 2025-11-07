@@ -166,6 +166,7 @@ if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
         <a href="listar_entidades.php">Listar Entidades</a>
         <a href="registrar_doacao_form.php">Registrar Doação</a>
         <a href="listar_doacoes.php">Consultar Doações</a>
+        <a href="logout.php" style="background-color: #e74c3c;">Sair / Logoff</a>
     </div>
 
     <h2>1. Cadastrar Novo Doador ou Instituição</h2>
@@ -189,9 +190,7 @@ if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
 </div>
 
 
-</div class="logoff">
-        <a href="logout.php" class="logoff-btn">Sair / Logoff</a>
-</div>
+
 <script>
     function ajustarPlaceholder(valor) {
         const nomeInput = document.getElementById('nome');
