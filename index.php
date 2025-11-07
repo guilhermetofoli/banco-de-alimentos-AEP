@@ -1,3 +1,11 @@
+<?php
+session_start();
+// CÓDIGO DE PROTEÇÃO: Redireciona para o login se o usuário não estiver autenticado
+if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -136,6 +144,16 @@
         text-align: center; 
         font-weight: bold; 
     }
+
+    .logoff-btn {
+        background-color: #e74c3c; /* Vermelho */
+        color: white;
+        padding: 8px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
 </style>
 </head>
 <body>
@@ -144,7 +162,7 @@
     <h1>Banco de Alimentos <br> <small style="font-size: 0.6em; font-weight: 300; color: #7f8c8d;">MVP - Gerenciamento de Entidades</small></h1>
 
     <div class="nav-links">
-        <a href="index.html">Cadastro de Entidade</a>
+        <a href="index.php">Cadastro de Entidade</a>
         <a href="listar_entidades.php">Listar Entidades</a>
         <a href="registrar_doacao_form.php">Registrar Doação</a>
         <a href="listar_doacoes.php">Consultar Doações</a>
@@ -170,6 +188,10 @@
     </form>
 </div>
 
+
+</div class="logoff">
+        <a href="logout.php" class="logoff-btn">Sair / Logoff</a>
+</div>
 <script>
     function ajustarPlaceholder(valor) {
         const nomeInput = document.getElementById('nome');

@@ -83,7 +83,23 @@ DELETE FROM instituicoes
 WHERE id_instituicao = 1;
 
 
-#AWDAD
+#TABELA RETIRADAS
+
+CREATE TABLE IF NOT EXISTS retiradas (
+    id_retirada INT AUTO_INCREMENT PRIMARY KEY,
+    fk_id_instituicao INT NOT NULL,
+    fk_id_alimento INT NOT NULL,
+    quantidade DECIMAL(10, 2) NOT NULL,
+    observacoes TEXT,
+    data_hora_retirada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (fk_id_instituicao) REFERENCES instituicoes(id_instituicao)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (fk_id_alimento) REFERENCES alimentos(id_alimento)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+
 -- 1. Remove a VIEW antiga
 DROP VIEW IF EXISTS vw_relatorio_doacoes;
 
