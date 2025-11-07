@@ -82,3 +82,24 @@ SELECT * FROM instituicoes;
 DELETE FROM instituicoes 
 WHERE id_instituicao = 1;
 
+
+#VISUALIZAÇÃO DE DOAÇÕES - RELATÓRIO
+-- 1. Remove a VIEW antiga
+DROP VIEW IF EXISTS vw_relatorio_doacoes;
+
+-- 2. Cria a VIEW NOVAMENTE, incluindo o ID da doação
+CREATE VIEW vw_relatorio_doacoes AS
+SELECT
+    d.id_doacao AS id_doacao, -- NOVO: Adiciona o ID da doação
+    d.data_hora_doacao AS Data,
+    doad.nome_razao_social AS Doador,
+    inst.nome_fantasia AS Instituicao_Receptora,
+    ali.nome_alimento AS Item,
+    d.quantidade AS Quantidade,
+    ali.unidade_medida AS Unidade
+FROM doacoes d
+JOIN doadores doad ON d.fk_id_doador = doad.id_doador
+JOIN instituicoes inst ON d.fk_id_instituicao = inst.id_instituicao
+JOIN alimentos ali ON d.fk_id_alimento = ali.id_alimento
+ORDER BY d.data_hora_doacao DESC;
+
