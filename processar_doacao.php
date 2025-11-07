@@ -2,16 +2,29 @@
 require_once 'conexao.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // 1. Coleta e sanitização dos dados
     $doador_id = mysqli_real_escape_string($conexao, $_POST['fk_id_doador']);
     $alimento_id = mysqli_real_escape_string($conexao, $_POST['fk_id_alimento']);
     $instituicao_id = mysqli_real_escape_string($conexao, $_POST['fk_id_instituicao']);
     $quantidade = mysqli_real_escape_string($conexao, $_POST['quantidade']);
     
-    // Query de INSERT na tabela DOACOES
-    $sql = "INSERT INTO doacoes (fk_id_doador, fk_id_alimento, fk_id_instituicao, quantidade) 
-            VALUES ('$doador_id', '$alimento_id', '$instituicao_id', '$quantidade')";
+    // Inicialização segura da observação com valor padrão, já que o formulário não a envia
+    $observacoes = "Doação via formulário.";
+    
+    // 2. Chamada da Stored Procedure
+    $sql = "CALL sp_registrar_doacao(
+        '$doador_id', 
+        '$alimento_id', 
+        '$instituicao_id', 
+        '$quantidade', 
+        '$observacoes'
+    )";
 
     if (mysqli_query($conexao, $sql)) {
+        
+        // Limpa resultados pendentes da SP
+        while (mysqli_more_results($conexao) && mysqli_next_result($conexao)) {;}
+        
         // Sucesso: Redireciona para a lista de Doações
         mysqli_close($conexao);
         header("Location: listar_doacoes.php?sucesso=true");
@@ -25,4 +38,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: registrar_doacao_form.php");
     exit();
 }
-?>

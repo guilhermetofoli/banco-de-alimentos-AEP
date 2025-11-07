@@ -31,10 +31,35 @@ if ($resultado && mysqli_num_rows($resultado) > 0) {
     }
 }
 
+$sql_estoque = "
+    SELECT
+        a.nome_alimento AS Alimento,
+        ce.saldo_atual AS Quantidade,
+        a.unidade_medida AS Unidade
+    FROM controle_estoque ce
+    JOIN alimentos a ON ce.fk_id_alimento = a.id_alimento
+    WHERE ce.saldo_atual > 0
+    ORDER BY a.nome_alimento ASC;
+";
+
+$resultado_estoque = mysqli_query($conexao, $sql_estoque);
+$estoque = [];
+
+if ($resultado_estoque) {
+    while($row = mysqli_fetch_assoc($resultado_estoque)) {
+        $row['Quantidade'] = (float)$row['Quantidade'];
+        $estoque[] = $row;
+    }
+}
+
 $mensagem_sucesso = "";
 if (isset($_GET['sucesso']) && $_GET['sucesso'] == 'true') {
-    // Captura o sucesso da doação ou edição
-    $mensagem_sucesso = "<div class='alert-success'>✅ Transação concluída e estoque atualizado com sucesso!</div>";
+    if (isset($_GET['msg'])) {
+        $msg = htmlspecialchars($_GET['msg']);
+        $mensagem_sucesso = "<div class='alert-success'>✅ $msg</div>";
+    } else {
+        $mensagem_sucesso = "<div class='alert-success'>✅ Transação concluída e estoque atualizado com sucesso!</div>";
+    }
 }
 
 
@@ -48,10 +73,8 @@ mysqli_close($conexao);
     <title>Consulta de Doações</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-    /* Importação da Fonte */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
     
-    /* Variáveis de Cor */
     :root {
         --primary-color: #27ae60;
         --secondary-color: #34495e;
@@ -95,7 +118,6 @@ mysqli_close($conexao);
         font-size: 1.8em;
     }
     
-    /* Estilo de Navegação */
     .nav-links { 
         margin-bottom: 30px; 
         border-bottom: 1px solid #eee; 
@@ -117,7 +139,6 @@ mysqli_close($conexao);
         text-decoration: none;
     }
 
-    /* Estilo de Tabela*/
     table { 
         width: 100%; 
         border-collapse: collapse; 
@@ -139,7 +160,6 @@ mysqli_close($conexao);
     tr:nth-child(even) { background-color: #f9f9f9; }
     tr:hover { background-color: #f1f1f1; }
     
-    /* Alertas e Mensagens */
     .alert-success { 
         background-color: #d4edda; 
         color: #155724; 
@@ -195,6 +215,13 @@ mysqli_close($conexao);
                                    title="Editar Doação #<?php echo $doacao['id_doacao']; ?>">
                                     &#x270E; Editar 
                                 </a>
+                                &nbsp;|&nbsp;
+                                <a href="deletar_doacao.php?id=<?php echo $doacao['id_doacao']; ?>"
+                                   onclick="return confirm('ATENÇÃO: A exclusão removerá esta doação e baixará o saldo do estoque. Confirmar?')"
+                                   style="color: red; text-decoration: none; font-weight: bold; font-size: 1.1em;"
+                                   title="Excluir Doação #<?php echo $doacao['id_doacao']; ?>">
+                                    &#x2715; Excluir
+                                </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -203,6 +230,31 @@ mysqli_close($conexao);
         <?php else: ?>
             <p style="color: #c0392b; font-weight: bold;">Nenhuma doação registrada ainda.</p>
         <?php endif; ?>
+
+        <h2 style="margin-top: 50px;">Visão Geral do Estoque Atual (Itens Disponíveis)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Alimento</th>
+                    <th>Quantidade Total</th>
+                    <th>Unidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($estoque)): ?>
+                    <?php foreach ($estoque as $item): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($item['Alimento']); ?></td>
+                            <td><?php echo number_format($item['Quantidade'], 2, ',', '.'); ?></td>
+                            <td><?php echo htmlspecialchars($item['Unidade']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="3">Nenhum item com saldo positivo no estoque.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
     </div>
 </body>
 </html>
