@@ -191,6 +191,7 @@ mysqli_close($conexao);
                         <th>Quantidade</th>
                         <th>Instituição Receptora</th>
                         <th>Data/Hora</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -202,6 +203,15 @@ mysqli_close($conexao);
                             <td><?php echo htmlspecialchars($doacao['quantidade'] . ' ' . $doacao['unidade_medida']); ?></td>
                             <td><?php echo htmlspecialchars($doacao['nome_instituicao']); ?></td>
                             <td><?php echo date('d/m/Y H:i:s', strtotime($doacao['data_hora_doacao'])); ?></td>
+                        
+                            <td>
+                                <a href="editar_doacao.php?id=<?php echo $doacao['id_doacao']; ?>" 
+                                   style="color: #007bff; text-decoration: none; font-weight: bold; font-size: 1.1em;"
+                                   title="Editar Doação #<?php echo $doacao['id_doacao']; ?>">
+                                    &#x270E; Editar 
+                                </a>
+                            </td>
+                        
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
