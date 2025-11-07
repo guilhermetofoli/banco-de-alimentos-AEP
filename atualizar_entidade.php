@@ -21,13 +21,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 2. Coleta dos campos a serem atualizados (Sanitização)
     $nome = mysqli_real_escape_string($conexao, $_POST['nome']);
     $documento = mysqli_real_escape_string($conexao, $_POST['documento']);
-    $email = mysqli_real_escape_string($conexao, $_POST['email'] ?? ''); // Assume que email pode não estar no POST
     
-    $sql_update = "";
-    $pk = ($tabela == 'doadores') ? 'id_doador' : 'id_instituicao'; // Chave Primária
-    $col_nome = ($tabela == 'doadores') ? 'nome_razao_social' : 'nome_fantasia';
-    $col_documento = ($tabela == 'doadores') ? 'documento_cpf_cnpj' : 'cnpj';
+    // -----------------------------------------------------------
+    // CORREÇÃO CRÍTICA: TRATAR EMAIL VAZIO COMO NULL PARA O DB
+    // -----------------------------------------------------------
+    $email_raw = $_POST['email'] ?? ''; 
+    
+    if (empty($email_raw)) {
+        // Se a string estiver vazia, a variável SQL recebe 'NULL' (sem aspas)
+        $email_sql = 'NULL'; 
+    } else {
+        // Se houver valor, sanitiza e coloca entre aspas simples
+        $email_sql = "'" . mysqli_real_escape_string($conexao, $email_raw) . "'";
+    }
+    // -----------------------------------------------------------
 
+    $sql_update = "";
+    $pk = ($tabela == 'doadores') ? 'id_doador' : 'id_instituicao'; 
+    
     // 3. Montagem da Query UPDATE condicional
     if ($tabela == 'doadores') {
         $tipo_doador = mysqli_real_escape_string($conexao, $_POST['tipo_doador']);
@@ -38,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 tipo_doador = '$tipo_doador', 
                 nome_razao_social = '$nome', 
                 documento_cpf_cnpj = '$documento',
-                email = '$email'
+                email = $email_sql  /* <-- USANDO A VARIÁVEL CORRIGIDA (pode ser NULL ou 'email@') */
             WHERE $pk = $id";
             
         $entidade = "Doador";
@@ -49,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             SET 
                 nome_fantasia = '$nome', 
                 cnpj = '$documento',
-                email = '$email'
+                email = $email_sql  /* <-- USANDO A VARIÁVEL CORRIGIDA */
             WHERE $pk = $id";
             
         $entidade = "Instituição";
@@ -64,11 +75,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
         
     } else {
-        // Falha: Captura o erro do MySQL (ex: CPF/CNPJ duplicado)
+        // Falha: Captura o erro do MySQL
         $erro_sql = mysqli_error($conexao);
         
         if (strpos($erro_sql, 'Duplicate entry') !== false) {
-             $erro_msg = "Falha na atualização: O CPF/CNPJ informado já está sendo usado.";
+             $erro_msg = "Falha na atualização: O CPF/CNPJ informado já está sendo usado ou o e-mail é duplicado.";
         } else {
              $erro_msg = "Falha na atualização: " . $erro_sql;
         }
