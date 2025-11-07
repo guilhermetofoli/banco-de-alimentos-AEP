@@ -1,5 +1,10 @@
 <?php
-// Inclui o arquivo de conexão com o banco de dados
+session_start();
+// CÓDIGO DE PROTEÇÃO
+if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexao.php';
 
 // 1. Verifica se os dados do formulário foram enviados via POST
@@ -71,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         <?php endif; ?>
 
-        <p><a href="index.html">Voltar para o Formulário de Cadastro</a></p>
+        <p><a href="index.php">Voltar para o Formulário de Cadastro</a></p>
     </div>
 </body>
 </html>

@@ -1,4 +1,10 @@
 <?php
+session_start();
+// CÓDIGO DE PROTEÇÃO
+if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexao.php';
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -21,7 +27,7 @@ if ($tabela == 'doadores') {
 
 if (mysqli_query($conexao, $sql_delete)) {
     mysqli_close($conexao);
-    header("Location: listar_entidades.php?sucesso=true&entidade=" . urlencode("$entidade excluída com sucesso!"));
+    header("Location: listar_entidades.php?sucesso=true&entidade=" . urlencode("$entid1ade excluído com sucesso!"));
     exit();
 } else {
     $erro = "Erro ao excluir $entidade: " . mysqli_error($conexao);

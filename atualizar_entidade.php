@@ -1,4 +1,10 @@
 <?php
+session_start();
+// CÓDIGO DE PROTEÇÃO
+if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexao.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

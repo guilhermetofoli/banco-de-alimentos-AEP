@@ -1,6 +1,11 @@
 <?php
-require_once 'conexao.php'; 
-
+session_start();
+// CÓDIGO DE PROTEÇÃO
+if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+require_once 'conexao.php';
 // Query com JOINs para buscar o NOME dos doadores, alimentos e instituições
 $sql_select = "
     SELECT 
@@ -174,7 +179,7 @@ mysqli_close($conexao);
         <h1>Consulta de Doações <br> <small style="font-size: 0.6em; font-weight: 300; color: #7f8c8d;">Registro e Histórico de Transações</small></h1>
 
         <div class="nav-links">
-            <a href="index.html">Cadastro de Entidade</a>
+            <a href="index.php">Cadastro de Entidade</a>
             <a href="listar_entidades.php">Listar Entidades</a>
             <a href="registrar_doacao_form.php">Registrar Doação</a>
             <a href="listar_doacoes.php">Consultar Doações</a>

@@ -1,4 +1,10 @@
 <?php
+session_start();
+// CÓDIGO DE PROTEÇÃO
+if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
+    header("Location: login.php");
+    exit();
+}
 require_once 'conexao.php';
 
 // 1. Receber e validar os parâmetros da URL
@@ -45,7 +51,6 @@ mysqli_close($conexao);
     <title>Editar <?php echo $titulo; ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* (COLE SEU CSS COMPLETO E UNIFICADO AQUI, incluindo .alert-danger e .alert-success) */
         /* Importação da Fonte */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
         :root {
@@ -193,12 +198,11 @@ mysqli_close($conexao);
         <?php endif; ?>
 
 
-        <button type="submit">💾 Salvar Alterações</button>
+        <button type="submit">Salvar Alterações</button>
     </form>
 </div>
 
 <script>
-    // [COLE AQUI A FUNÇÃO checkFeedback() do seu index.html e chame-a]
     function checkFeedback() {
         const urlParams = new URLSearchParams(window.location.search);
         const errorMessage = urlParams.get('erro');
