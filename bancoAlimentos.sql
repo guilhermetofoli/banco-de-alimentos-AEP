@@ -83,7 +83,7 @@ DELETE FROM instituicoes
 WHERE id_instituicao = 1;
 
 
-#VISUALIZAÇÃO DE DOAÇÕES - RELATÓRIO
+#AWDAD
 -- 1. Remove a VIEW antiga
 DROP VIEW IF EXISTS vw_relatorio_doacoes;
 
@@ -102,4 +102,3 @@ JOIN doadores doad ON d.fk_id_doador = doad.id_doador
 JOIN instituicoes inst ON d.fk_id_instituicao = inst.id_instituicao
 JOIN alimentos ali ON d.fk_id_alimento = ali.id_alimento
 ORDER BY d.data_hora_doacao DESC;
-
