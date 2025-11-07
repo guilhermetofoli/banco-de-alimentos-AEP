@@ -286,3 +286,51 @@ SET saldo_atual = 0.00;
 
 -- VERIFICAÇÃO FINAL
 SELECT * FROM controle_estoque;
+
+--DML
+
+
+# -------------------------------------------------------------------
+# DADOS MÍNIMOS COERENTES PARA DEMONSTRAÇÃO (DML)
+# -------------------------------------------------------------------
+
+# 1. INSERÇÃO DE ENTIDADES BÁSICAS (Doador e Instituição)
+-- Insere um Doador PF (ID 1) e PJ (ID 2)
+INSERT INTO doadores (tipo_doador, nome_razao_social, documento_cpf_cnpj) VALUES 
+('Pessoa Física', 'Carlos Almeida (Teste)', '11122233344'),
+('Pessoa Jurídica', 'Distribuidora TESTE Ltda', '00012345678901');
+
+-- Insere Instituições Receptoras (ID 1 e ID 2)
+INSERT INTO instituicoes (nome_fantasia, cnpj) VALUES 
+('ONG Esperança (Abrigo)', '22098765432100'),
+('Escola Municipal (Refeitório)', '33000000000011');
+
+
+# 2. POPULAÇÃO INICIAL DOS ALIMENTOS (Se já não existirem)
+-- Nota: Você já tem este bloco no seu CREATE, é apenas um lembrete.
+-- INSERT INTO alimentos (nome_alimento, tipo, unidade_medida) VALUES...
+
+
+# 3. GARANTIR QUE O ESTOQUE ESTÁ PRONTO (CRÍTICO)
+-- Isso garante que as 4 linhas da tabela 'controle_estoque' existem para que a SP não falhe.
+INSERT INTO controle_estoque (fk_id_alimento, saldo_atual)
+SELECT id_alimento, 0.00 FROM alimentos
+ON DUPLICATE KEY UPDATE saldo_atual = saldo_atual;
+
+
+# 4. REGISTRO DE UMA DOAÇÃO (Para mostrar o fluxo de ENTRADA)
+-- Doação inicial: ID 1 (Carlos) doa 50kg de Arroz (ID 1) para a ONG Esperança (ID 1)
+-- IMPORTANTE: Este comando deve ser executado pelo PHP, mas para o script DML
+-- de teste, o uso do CALL simula a transação completa (INSERT + UPDATE ESTOQUE)
+-- ATENÇÃO: Se a sua SP não estiver funcionando, use o INSERT simples para o teste inicial:
+
+INSERT INTO doacoes (fk_id_doador, fk_id_instituicao, fk_id_alimento, quantidade, observacoes) 
+VALUES (1, 1, 1, 50.00, 'Doação inicial para setup.');
+
+-- SIMULANDO UMA SEGUNDA DOAÇÃO (Banana)
+INSERT INTO doacoes (fk_id_doador, fk_id_instituicao, fk_id_alimento, quantidade, observacoes) 
+VALUES (2, 2, 3, 20.00, 'Doação de PJ para escola.');
+
+-- Comando para verificar o saldo final no phpMyAdmin
+SELECT nome_alimento, saldo_atual FROM controle_estoque ce 
+JOIN alimentos a ON ce.fk_id_alimento = a.id_alimento;
