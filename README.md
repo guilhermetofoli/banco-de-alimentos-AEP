@@ -62,4 +62,4 @@ Instalar **XAMPP** (ou similar) com Apache, PHP e MySQL.
 
 * **REPOSITÓRIO NO GITHUB:** [Banco de Alimentos AEP](https://github.com/guilhermetofoli/banco-de-alimentos-AEP.git)
 
-* **Pitch no Youtube:** [MVP - Banco de Alimentos](https://youtu.be/3Ta8HYx-ZUk)
+* **PITCH NO YOUTUBE:** [MVP - Banco de Alimentos](https://youtu.be/3Ta8HYx-ZUk)
