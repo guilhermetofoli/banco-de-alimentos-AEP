@@ -194,16 +194,14 @@ CREATE PROCEDURE sp_registrar_doacao (
 BEGIN
     START TRANSACTION;
 
-    -- 1. Insere a doação (Isso está funcionando)
+    -- 1. Insere a doação   
     INSERT INTO doacoes (
         fk_id_doador, fk_id_alimento, fk_id_instituicao, quantidade, observacoes
     ) VALUES (
         p_id_doador, p_id_alimento, p_id_instituicao, p_quantidade, p_observacoes
     );
 
-    -- 2. Atualiza o saldo do estoque (REVISADO)
-    -- Usa INSERT ... ON DUPLICATE KEY UPDATE para garantir que o registro exista, mesmo que não devesse.
-    -- MAS vamos manter o UPDATE simples para verificar a lógica.
+    -- 2. Atualiza o saldo do estoque
     
     UPDATE controle_estoque
     SET saldo_atual = saldo_atual + p_quantidade
@@ -219,7 +217,7 @@ USE banco_de_alimentos;
 
 DELIMITER $$
 
--- Remove o Trigger anterior (para recriar)
+-- Remove o Trigger anterior
 DROP TRIGGER IF EXISTS trg_atualiza_estoque_edicao;
 
 CREATE TRIGGER trg_atualiza_estoque_edicao
