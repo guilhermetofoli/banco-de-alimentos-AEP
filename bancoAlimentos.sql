@@ -194,14 +194,14 @@ CREATE PROCEDURE sp_registrar_doacao (
 BEGIN
     START TRANSACTION;
 
-    -- 1. Insere a doação (Isso está funcionando)
+    -- 1. Insere a doação
     INSERT INTO doacoes (
         fk_id_doador, fk_id_alimento, fk_id_instituicao, quantidade, observacoes
     ) VALUES (
         p_id_doador, p_id_alimento, p_id_instituicao, p_quantidade, p_observacoes
     );
 
-    -- 2. Atualiza o saldo do estoque (REVISADO)
+    -- 2. Atualiza o saldo do estoque
     UPDATE controle_estoque
     SET saldo_atual = saldo_atual + p_quantidade
     WHERE fk_id_alimento = p_id_alimento;
