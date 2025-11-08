@@ -53,3 +53,13 @@ Instalar **XAMPP** (ou similar) com Apache, PHP e MySQL.
 2.  **Teste de Entrada (Soma):** Registre uma doação de 50 Kg de Arroz. O estoque em **Consultar Doações** deve mostrar **50.00 Kg**.
 3.  **Teste de Exclusão (Subtração):** Delete o registro de 50 Kg. O estoque deve voltar para **0.00 Kg** (prova a reversão do saldo).
 4.  **Teste de Edição:** Edite um registro de 10 Kg para 30 Kg. O estoque deve corrigir e somar **20 Kg** (a diferença).
+
+***
+
+## 5. Links úteis
+
+* **LINK DO NOTION:** [Desenvolvimento do MVP - Banco de Alimentos](https://www.notion.so/Fase-de-Desenvolvimento-do-MVP-Banco-de-Alimentos-28e1b34d5f38801e927adcb58a0a9d6e?source=copy_link)
+
+* **REPOSITÓRIO NO GITHUB:** [Banco de Alimentos AEP](https://github.com/guilhermetofoli/banco-de-alimentos-AEP.git)
+
+* **Pitch no Youtube:** [MVP - Banco de Alimentos](https://youtu.be/3Ta8HYx-ZUk)
